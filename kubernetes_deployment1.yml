@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: kubernetesservice
+spec:
+  selector:
+    app: dockerimagejar
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster
+      port: 8089
+      # Port to forward to inside the pod
+      targetPort: 8085
+      # Port accessible outside cluster
+      nodePort: 30002
+  type: LoadBalancer
+
+
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: myappdeployment
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: dockerimagejar
+    spec:
+      containers:
+        - name: dockerimagejar
+          image: firstdockerimagespringbootjar
+          ports:
+            - containerPort: 8085
+          imagePullPolicy: Never
